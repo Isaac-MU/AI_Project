@@ -3,7 +3,7 @@ class Agent:
     new_game and *_outcome methods simply inform agents of events that have occured,
     while propose_mission, vote, and betray require the agent to commit some action.'''
 
-    #game parameters for agents to access
+    #game parameters for agents to access test
     #python is such that these variables could be mutated, so tournament play
     #will be conducted via web sockets.
     #e.g. self.mission_size[8][3] is the number to be sent on the 3rd mission in a game of 8
