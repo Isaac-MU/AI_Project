@@ -22,6 +22,13 @@ class AI_Agent(Agent):
         self.spy_list = spy_list
         self.rounds_complete = 0
         self.missions_failed = 0
+        self.suspicion = []    #array of size number_of_players to show the chances of them being spy
+        i = 0
+        while i < number_of_players:
+            if i != self.player_number:
+                self.suspicion.append(len(self.spy_list)/(self.number_of_players - 1))
+            i += 1
+        
 
     def is_spy(self):
         '''
@@ -96,6 +103,17 @@ class AI_Agent(Agent):
         and mission_success is True if there were not enough betrayals to cause the mission to fail, False otherwise.
         It iss not expected or required for this function to return anything.
         '''
+        if not mission_success:
+            agent = 0
+        # if number of betrayals equals number of spies only agents that went on last mission can be spies
+        if betrayals == len(self.spy_list):
+            while agent < self.number_of_players:
+                if agent in mission:
+                     self.suspicion[agent] = betrayals/len(mission)
+                else:
+                    self.suspicion[agent] = -1
+
+                agent += 1
         #nothing to do here
         pass
 
