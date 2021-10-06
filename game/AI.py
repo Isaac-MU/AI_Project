@@ -20,6 +20,8 @@ class AI_Agent(Agent):
         self.number_of_players = number_of_players
         self.player_number = player_number
         self.spy_list = spy_list
+        self.rounds_complete = 0
+        self.missions_failed = 0
 
     def is_spy(self):
         '''
@@ -34,6 +36,8 @@ class AI_Agent(Agent):
         betrayals_required are the number of betrayals required for the mission to fail.
         '''
         team = []
+        if self.critical_mission():
+            team.append(self.player_number)
         while len(team)<team_size:
             agent = random.randrange(team_size)
             if agent not in team:
@@ -47,7 +51,16 @@ class AI_Agent(Agent):
         proposer is an int between 0 and number_of_players and is the index of the player who proposed the mission.
         The function should return True if the vote is for the mission, and False if the vote is against the mission.
         '''
-        return random.random()<0.5
+        vote = False
+        if proposer == self.player_number:
+            vote = True
+        elif self.is_spy() and self.critical_mission():
+            for spy in self.spy_list:
+                if spy in mission:
+                    vote = True
+        else:
+            vote =  random.random()<0.5
+        return(vote)
 
     def vote_outcome(self, mission, proposer, votes):
         '''
@@ -68,7 +81,10 @@ class AI_Agent(Agent):
         The method should return True if this agent chooses to betray the mission, and False otherwise. 
         By default, spies will betray 30% of the time. 
         '''
-        if self.is_spy():
+        
+        if self.is_spy() and self.critical_mission():
+            return(True)
+        else:
             return random.random()<0.3
 
     def mission_outcome(self, mission, proposer, betrayals, mission_success):
@@ -89,7 +105,8 @@ class AI_Agent(Agent):
         rounds_complete, the number of rounds (0-5) that have been completed
         missions_failed, the numbe of missions (0-3) that have failed.
         '''
-        #nothing to do here
+        self.rounds_complete = rounds_complete
+        self.missions_failed = missions_failed
         pass
     
     def game_outcome(self, spies_win, spies):
@@ -101,5 +118,15 @@ class AI_Agent(Agent):
         #nothing to do here
         pass
 
-
+    def critical_mission(self):
+        if self.rounds_complete == 4:
+            return(True)
+        elif self.missions_failed == 2:
+            return(True)
+        elif self.rounds_complete == 2 and self.missions_failed == 0:
+            return(True)
+        elif self.rounds_complete == 3 and self.missions_failed == 1:
+            return(True)
+        else:
+            return(False)
 
