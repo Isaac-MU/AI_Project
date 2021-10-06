@@ -22,12 +22,20 @@ class AI_Agent(Agent):
         self.spy_list = spy_list
         self.rounds_complete = 0
         self.missions_failed = 0
-        self.suspicion = []    #array of size number_of_players to show the chances of them being spy
+        self.suspicion = []    #array of size number_of_players to show the chances of them being spy from 0 to 1
         i = 0
         while i < number_of_players:
             if i != self.player_number:
                 self.suspicion.append(len(self.spy_list)/(self.number_of_players - 1))
+            else:
+                self.suspicion.append(-1)
             i += 1
+        if number_of_players == 5 or number_of_players == 6:
+            self.number_of_spies = 2
+        elif number_of_players == 7 or  number_of_players == 8 or number_of_players == 9:
+            self.number_of_spies = 3
+        elif number_of_players == 10:
+            self.number_of_spies = 4
         
 
     def is_spy(self):
@@ -61,6 +69,7 @@ class AI_Agent(Agent):
         vote = False
         if proposer == self.player_number:
             vote = True
+        #If spy Only vote for critcal missions ie win or lose situation if spy is on
         elif self.is_spy() and self.critical_mission():
             for spy in self.spy_list:
                 if spy in mission:
@@ -103,18 +112,58 @@ class AI_Agent(Agent):
         and mission_success is True if there were not enough betrayals to cause the mission to fail, False otherwise.
         It iss not expected or required for this function to return anything.
         '''
+        # For now only really works when not spy
         if not mission_success:
             agent = 0
-        # if number of betrayals equals number of spies only agents that went on last mission can be spies
-        if betrayals == len(self.spy_list):
-            while agent < self.number_of_players:
-                if agent in mission:
-                     self.suspicion[agent] = betrayals/len(mission)
-                else:
-                    self.suspicion[agent] = -1
+            suspect_agents = [] #List of tuples containing suspect agent and current suspicion lvls
+            non_suspect_agents = [] # Agents not on mission
+            total_sus = 0 
 
-                agent += 1
-        #nothing to do here
+            # if number of betrayals equals number of spies only agents that went on last mission can be spies
+            if betrayals == self.number_of_spies:
+                while agent < self.number_of_players:
+                    if agent in mission and self.suspicion[agent] != -1:
+                        suspect_agents.append((agent,self.suspicion[agent]))
+                        total_sus += self.suspicion[agent]
+                    else:
+                        self.suspicion[agent] = -1 #Agent is not suspicious
+                    agent += 1
+                for suspect in suspect_agents:
+                    self.suspicion[suspect[0]] = suspect[1]/total_sus
+
+            else:
+                betrayal_ratio = betrayals/ self.number_of_spies
+                
+                while agent < self.number_of_players:
+                    if agent in mission and self.suspicion[agent] != -1:
+                        suspect_agents.append((agent,self.suspicion[agent]))
+                        total_sus += self.suspicion[agent]
+                    elif self.suspicion[agent] != -1:
+                        non_suspect_agents.append((agent,self.suspicion[agent]))
+                    agent += 1
+
+                # Will crash if total_sus = 0 (Prob due to agent being in mission with non suspicious agents and being a spy???)
+                if total_sus == 0:
+                    return(0)
+
+                # total_sus == 1 also crashes I assume this means that the only suspicious agents went on the mission
+                if total_sus == 1:
+                    return(1)
+
+                # Adjust the suspicion of agents on mission based on betrayels and amount on agents on mission
+                suspicion_ratio = betrayal_ratio / total_sus
+                total_non_sus = 1 - total_sus
+                new_total_sus = 0
+
+                for suspect in suspect_agents:
+                    self.suspicion[suspect[0]] = suspect[1] * suspicion_ratio
+                    new_total_sus += self.suspicion[suspect[0]]
+
+                # Similarly adjust suspicion of agents not on mission
+                new_total_non_sus = 1 - new_total_sus
+                for non_suspect in non_suspect_agents:
+                    non_sus_ratio = non_suspect[1] / total_non_sus
+                    self.suspicion[non_suspect[0]] = non_sus_ratio * new_total_sus
         pass
 
     def round_outcome(self, rounds_complete, missions_failed):
@@ -137,6 +186,9 @@ class AI_Agent(Agent):
         pass
 
     def critical_mission(self):
+        '''
+        Returns True if round can result in either a spy or resistance win False otherwise
+        '''
         if self.rounds_complete == 4:
             return(True)
         elif self.missions_failed == 2:
