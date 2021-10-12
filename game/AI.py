@@ -51,12 +51,41 @@ class AI_Agent(Agent):
         betrayals_required are the number of betrayals required for the mission to fail.
         '''
         team = []
-        if self.critical_mission():
-            team.append(self.player_number)
-        while len(team)<team_size:
-            agent = random.randrange(team_size)
-            if agent not in team:
-                team.append(agent)
+        suspectIndex = [] #List of tuples containng index of agent and suspect lvl
+        index = 0
+        for agent in self.suspicion:
+            suspectIndex.append((agent,index))
+            index += 1
+
+        suspectIndex.sort() # Sort by suspicion in acending order
+
+        # If not spy always put least suspicious agents on mission
+        if not self.is_spy():
+            i = 0
+            while len(team)<team_size:
+                team.append(suspectIndex[i][1])
+                i += 1
+        # If spy put the least suspcious spy on mission (for now that will always be the AI)
+        # And most suspicous agents
+        else:
+
+            for a in suspectIndex:
+                #First spy is least suspicous
+                if a[1] in self.spy_list:
+                    team.append(a[1])
+
+                    if self.number_of_players <= 6 or self.rounds_complete != 3: #Two may be spies required
+                        break
+                    elif len(team) == 2:
+                        break
+
+            suspectIndex.sort(reverse=True) # Sort by suspicion in decending order
+            
+            for a in suspectIndex:
+                if a[1] not in self.spy_list:
+                    team.append(a[1])
+                    if team == team_size:
+                        break
         return team        
 
     def vote(self, mission, proposer):
@@ -67,6 +96,7 @@ class AI_Agent(Agent):
         The function should return True if the vote is for the mission, and False if the vote is against the mission.
         '''
         vote = False
+        #Obviously vote for missions agent proposed
         if proposer == self.player_number:
             vote = True
         #If spy Only vote for critcal missions ie win or lose situation if spy is on
