@@ -24,12 +24,20 @@ class AI_Agent(Agent):
         self.missions_failed = 0
         self.suspicion = []    #array of size number_of_players to show the chances of them being spy from 0 to 1
         i = 0
-        while i < number_of_players:
-            if i != self.player_number:
-                self.suspicion.append(len(self.spy_list)/(self.number_of_players - 1))
-            else:
-                self.suspicion.append(-1)
-            i += 1
+        #If not spy no need to track suspcion of AI agent
+        if not self.is_spy():
+
+            while i < number_of_players:
+                if i != self.player_number:
+                    self.suspicion.append(len(self.spy_list)/(self.number_of_players - 1))
+                else:
+                    self.suspicion.append(-1)
+                i += 1
+        else:
+            while i < number_of_players:
+                    self.suspicion.append(len(self.spy_list)/(self.number_of_players))
+                    i += 1
+
         if number_of_players == 5 or number_of_players == 6:
             self.number_of_spies = 2
         elif number_of_players == 7 or  number_of_players == 8 or number_of_players == 9:
@@ -96,6 +104,14 @@ class AI_Agent(Agent):
         The function should return True if the vote is for the mission, and False if the vote is against the mission.
         '''
         vote = False
+        suspectIndex = [] #List of tuples containng index of agent and suspect lvl
+        index = 0
+        for agent in self.suspicion:
+            suspectIndex.append((agent,index))
+            index += 1
+
+        suspectIndex.sort(reverse=True) # Sort by suspicion in decending order
+
         #Obviously vote for missions agent proposed
         if proposer == self.player_number:
             vote = True
@@ -104,8 +120,40 @@ class AI_Agent(Agent):
             for spy in self.spy_list:
                 if spy in mission:
                     vote = True
+        #If not spy vote for missions if most suspcious agents aren't on
+        elif not self.is_spy():
+            vote = True
+            suspects = [] # list of most suspcious agents length of number of spies
+            i = 0
+
+            while len(suspects) != self.number_of_spies:
+                suspects.append(suspectIndex[i][1])
+
+            for a in mission:
+                 if a in suspects:
+                    vote = False
+            
+        #If spy only vote for missions with minimum number of spies needed to fail mission
+        # and not most suspect spy
         else:
-            vote =  random.random()<0.5
+            suspectIndex.sort()# Sort in acedning order
+            vote = True
+            susSpy = -1 #Most suspcious spy
+            spyCount = 0
+            for suspect in suspectIndex:
+                if suspect[1] in self.spy_list:
+                    susSpy = suspect
+            for a in mission:
+                if a == susSpy:
+                    vote = False
+                    break
+                if a in self.spy_list:
+                    spyCount += 1
+            if self.number_of_players > 6 or self.rounds_complete == 3 and spyCount != 2:
+                vote = False
+            elif spyCount != 1:
+                vote = False
+
         return(vote)
 
     def vote_outcome(self, mission, proposer, votes):
@@ -160,6 +208,7 @@ class AI_Agent(Agent):
                     agent += 1
                 for suspect in suspect_agents:
                     self.suspicion[suspect[0]] = suspect[1]/total_sus
+                
 
             else:
                 betrayal_ratio = betrayals/ self.number_of_spies
