@@ -73,7 +73,7 @@ class AI_Agent(Agent):
             while len(team)<team_size:
                 team.append(suspectIndex[i][1])
                 i += 1
-        # If spy put the least suspcious spy on mission (for now that will always be the AI)
+        # If spy put the least suspcious spy on mission 
         # And most suspicous agents
         else:
 
@@ -175,12 +175,45 @@ class AI_Agent(Agent):
         The method should return True if this agent chooses to betray the mission, and False otherwise. 
         By default, spies will betray 30% of the time. 
         '''
-        
-        if self.is_spy() and self.critical_mission():
-            return(True)
-        else:
-            return random.random()<0.3
+        averageSuspicion = 1 / self.number_of_players
+        suspectIndex = [] #List of tuples containng index of agent in mission and suspect lvl
+        index = 0
+        for a in self.suspicion:
+            if index in mission:
+                suspectIndex.append((a,index))
+            index += 1
+        suspectIndex.sort(reverse=True) # Sort by suspicion in decending order
 
+        spies = []#Spies in mission 
+        for agent in mission:
+                if agent in self.spy_list:
+                    spies.append(agent)
+
+        if self.critical_mission():
+            return(True)
+
+        #Dont betray if only spy on mission where 2 betrayals needed
+        elif self.number_of_players > 6 or self.rounds_complete == 3:
+            if len(spies) == 1:
+                return(False)
+
+        #Dont betray if all spies are on mission
+        elif len(spies) == self.number_of_spies:
+            return(False)
+
+        #Only betray if suspicion of all spies on mission is less than average or 
+        #There is a more suspicious non spy
+        else:
+            for ag in suspectIndex:
+                if ag[1] in mission and ag[1] in spies:
+                    break
+                elif ag[1] in mission:
+                    return(True)
+            betray = True
+            for ag in suspectIndex:
+                if ag[1] in spies and ag[0] > averageSuspicion:
+                    betray = False
+            return(betray)
     def mission_outcome(self, mission, proposer, betrayals, mission_success):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -190,7 +223,7 @@ class AI_Agent(Agent):
         and mission_success is True if there were not enough betrayals to cause the mission to fail, False otherwise.
         It iss not expected or required for this function to return anything.
         '''
-        # For now only really works when not spy
+
         if not mission_success:
             agent = 0
             suspect_agents = [] #List of tuples containing suspect agent and current suspicion lvls
