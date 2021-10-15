@@ -28,11 +28,11 @@ class Game:
         random.shuffle(self.agents)
         self.num_players = len(agents)
         #allocate spies
-        self.spies = []
-        while len(self.spies) < Agent.spy_count[self.num_players]:
-            spy = random.randrange(self.num_players)
-            if spy not in self.spies:
-                self.spies.append(spy)
+        self.spies = [3, 4]
+        #while len(self.spies) < Agent.spy_count[self.num_players]:
+        #    spy = random.randrange(self.num_players)
+        #    if spy not in self.spies:
+         #       self.spies.append(spy)
         #start game for each agent        
         for agent_id in range(self.num_players):
             spy_list = self.spies.copy() if agent_id in self.spies else []
