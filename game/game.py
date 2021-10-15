@@ -3,6 +3,7 @@ from random_agent import RandomAgent
 import random
 
 class Game:
+    
     '''
     A class for maintaining the state of a game of The Resistance.
     A agent oriented architecture is maintained where the 
@@ -58,8 +59,18 @@ class Game:
             s = s + '\n' + str(r)
         if self.missions_lost<3:
             s = s + '\nThe Resistance succeeded!'
+            print('RES WIN')
+            f = open("results.txt", "a")
+            f.write("RES ")
+            f.close()
+
         else:
             s = s + '\nThe Resistance failed!'
+            print('SPY WIN')
+            f = open("results.txt", "a")
+            f.write("SPY ")
+            f.close()
+
         s = s + 'The spies were agents: '+ str(self.spies)    
         return s    
 
@@ -92,6 +103,7 @@ class Round():
             s = s + '\nResistance won the round.'
         else:
             s = s + '\nResistance lost the round.'
+
         return s    
 
     def __repr__(self):
