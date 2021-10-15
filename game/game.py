@@ -11,7 +11,7 @@ class Game:
     to share information and get game actions
     '''
 
-    def __init__(self, agents):
+    def __init__(self, agents,res_or_spy):
         '''
         agents is the list of agents playing the game
         the list must contain 5-10 agents
@@ -28,7 +28,26 @@ class Game:
         random.shuffle(self.agents)
         self.num_players = len(agents)
         #allocate spies
-        self.spies = [3, 4]
+        spyCount = 0
+        if len(self.agents) == 5 or len(self.agents) == 6:
+            spyCount = 2
+        elif len(self.agents) == 7 or len(self.agents) == 8 or len(self.agents) == 9:
+            spyCount = 3
+        else:
+            spyCount = 4
+        self.spies = []
+        spy = 0
+        if res_or_spy == 'S' or res_or_spy == 's':
+
+            while len(self.spies) != spyCount:
+                if self.agents[spy].name == 'AI':
+                    self.spies.append(spy)
+                spy += 1
+        else:
+            while len(self.spies) != spyCount:
+                if self.agents[spy].name == 'R':
+                    self.spies.append(spy)
+                spy += 1
         #while len(self.spies) < Agent.spy_count[self.num_players]:
         #    spy = random.randrange(self.num_players)
         #    if spy not in self.spies:
