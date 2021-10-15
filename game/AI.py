@@ -214,6 +214,7 @@ class AI_Agent(Agent):
                 if ag[1] in spies and ag[0] > averageSuspicion:
                     betray = False
             return(betray)
+
     def mission_outcome(self, mission, proposer, betrayals, mission_success):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -240,7 +241,10 @@ class AI_Agent(Agent):
                         self.suspicion[agent] = -1 #Agent is not suspicious
                     agent += 1
                 for suspect in suspect_agents:
-                    self.suspicion[suspect[0]] = suspect[1]/total_sus
+                    if total_sus == 0:
+                        self.suspicion[suspect[0]] = 1
+                    else:
+                        self.suspicion[suspect[0]] = suspect[1]/total_sus
                 
 
             else:
