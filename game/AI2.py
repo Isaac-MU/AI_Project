@@ -234,8 +234,8 @@ class AI_Agent2(Agent):
 
         if mission_success:
             for i in mission:
-                self.suspicion[i] -= 1
-            self.suspicion[proposer] -= 1
+                self.suspicion[i] -= 10
+            self.suspicion[proposer] -= 10
 
 
         else:
