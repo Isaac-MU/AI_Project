@@ -1,20 +1,12 @@
 from random_agent import RandomAgent
-from AI import AI_Agent
+from AI2 import AI_Agent
 from game import Game
 
-agents = [AI_Agent(name='AI'), 
-        RandomAgent(name='r2'),  
-        RandomAgent(name='r3'),  
-        RandomAgent(name='r4'),  
-        RandomAgent(name='r5'),  
-        RandomAgent(name='r6'),  
-        RandomAgent(name='r7')]
+f = open("agent_results.txt", "w")
+f.write("")
+f.close()
 
-game = Game(agents)
-game.play()
-print(game)
-
-for k in range(20):
+for k in range(10000):
         
         agents = [AI_Agent(name='AI'), 
                 RandomAgent(name='r2'),  
@@ -26,5 +18,4 @@ for k in range(20):
 
         game = Game(agents)
         game.play()
-        print(game)
 
