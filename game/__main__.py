@@ -7,6 +7,11 @@ f = open("results.txt", "w")
 f.write("")
 f.close()
 
+f = open("agent_results.txt", "w")
+f.write("")
+f.close()
+
+
 num = int(input("Game Size?:"))
 c = input("Should AI be spies or resistance S/R?:")
 if c != 'R' and c != 'r' and  c != 's' and  c != 's':

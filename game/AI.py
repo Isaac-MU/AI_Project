@@ -4,7 +4,7 @@ import random
 class AI_Agent(Agent):        
     '''A sample implementation of a random agent in the game The Resistance'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, name='AI_agent'):
         '''
         Initialises the agent.
         Nothing to do here.
@@ -299,7 +299,24 @@ class AI_Agent(Agent):
         spies, a list of the player indexes for the spies.
         '''
         #nothing to do here
-        print(not spies_win, '<-----')
+        
+        if self.is_spy() and spies_win:
+            f = open("agent_results.txt", "a")
+            f.write(" WIN")
+            f.close()
+        elif self.is_spy() and not spies_win:
+            f = open("agent_results.txt", "a")
+            f.write(" LOSS")
+            f.close()
+        elif not self.is_spy() and spies_win:
+            f = open("agent_results.txt", "a")
+            f.write(" LOSS")
+            f.close()
+        elif not self.is_spy() and not spies_win:
+            f = open("agent_results.txt", "a")
+            f.write(" WIN")
+            f.close()
+
         pass
 
     def critical_mission(self):
