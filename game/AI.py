@@ -302,19 +302,19 @@ class AI_Agent(Agent):
         
         if self.is_spy() and spies_win:
             f = open("agent_results.txt", "a")
-            f.write(" WIN")
+            f.write(" SPY-WIN")
             f.close()
         elif self.is_spy() and not spies_win:
             f = open("agent_results.txt", "a")
-            f.write(" LOSS")
+            f.write(" SPY-LOSS")
             f.close()
         elif not self.is_spy() and spies_win:
             f = open("agent_results.txt", "a")
-            f.write(" LOSS")
+            f.write(" RES-LOSS")
             f.close()
         elif not self.is_spy() and not spies_win:
             f = open("agent_results.txt", "a")
-            f.write(" WIN")
+            f.write(" RES-WIN")
             f.close()
 
         pass

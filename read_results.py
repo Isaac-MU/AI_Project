@@ -20,15 +20,25 @@ def AI_results():
     data = f.read()
     words = data.split()
     print(len(words)) 
-    win_count = 0
-    loss_count = 0
+    spy_win_count = 0
+    spy_loss_count = 0
     for k in words:
-        if k == 'WIN':
-            win_count += 1
-        if k == 'LOSS':
-            loss_count += 1
-    print('WINS: ', win_count)
-    print('LOSSES: ', loss_count)
+        if k == 'SPY-WIN':
+            spy_win_count += 1
+        if k == 'SPY-LOSS':
+            spy_loss_count += 1
+    print('SPY WINS: ', spy_win_count)
+    print('SPY LOSSES: ', spy_loss_count)
+
+    res_win_count = 0
+    res_loss_count = 0
+    for k in words:
+        if k == 'RES-WIN':
+            res_win_count += 1
+        if k == 'RES-LOSS':
+            res_loss_count += 1
+    print('RES WINS: ', res_win_count)
+    print('RES LOSSES: ', res_loss_count)
 
 AI_results()
 overall_results()
