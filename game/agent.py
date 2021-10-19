@@ -3,14 +3,14 @@ class Agent:
     new_game and *_outcome methods simply inform agents of events that have occured,
     while propose_mission, vote, and betray require the agent to commit some action.'''
 
-    #game parameters for agents to access test
+    #game parameters for agents to access
     #python is such that these variables could be mutated, so tournament play
     #will be conducted via web sockets.
     #e.g. self.mission_size[8][3] is the number to be sent on the 3rd mission in a game of 8
     mission_sizes = {
             5:[2,3,2,3,3], \
-            6:[3,3,3,3,3], \
-            7:[2,3,3,4,5], \
+            6:[2,3,4,3,4], \
+            7:[2,3,3,4,4], \
             8:[3,4,4,5,5], \
             9:[3,4,4,5,5], \
             10:[3,4,4,5,5]
@@ -121,5 +121,3 @@ class Agent:
         spies, a list of the player indexes for the spies.
         '''
         pass
-
-

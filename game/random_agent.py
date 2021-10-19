@@ -100,6 +100,3 @@ class RandomAgent(Agent):
         '''
         #nothing to do here
         pass
-
-
-
