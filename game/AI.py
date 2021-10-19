@@ -299,6 +299,8 @@ class AI_Agent(Agent):
         spies, a list of the player indexes for the spies.
         '''
         #nothing to do here
+        if self.is_spy() and spies_win:
+            print("GG")
         pass
 
     def critical_mission(self):
