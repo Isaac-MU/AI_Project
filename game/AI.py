@@ -1,7 +1,7 @@
 from agent import Agent
 import random
 
-class AI_Agent(Agent):        
+class AI_Agent1(Agent):        
     '''A sample implementation of a random agent in the game The Resistance'''
 
     def __init__(self, name='Rando'):
@@ -301,19 +301,19 @@ class AI_Agent(Agent):
         #nothing to do here
         
         if self.is_spy() and spies_win:
-            f = open("agent_results.txt", "a")
+            f = open("agent_results1.txt", "a")
             f.write(" SPY-WIN")
             f.close()
         elif self.is_spy() and not spies_win:
-            f = open("agent_results.txt", "a")
+            f = open("agent_results1.txt", "a")
             f.write(" SPY-LOSS")
             f.close()
         elif not self.is_spy() and spies_win:
-            f = open("agent_results.txt", "a")
+            f = open("agent_results1.txt", "a")
             f.write(" RES-LOSS")
             f.close()
         elif not self.is_spy() and not spies_win:
-            f = open("agent_results.txt", "a")
+            f = open("agent_results1.txt", "a")
             f.write(" RES-WIN")
             f.close()
 
