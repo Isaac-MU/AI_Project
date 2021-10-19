@@ -22,21 +22,12 @@ class AI_Agent(Agent):
         self.spy_list = spy_list
         self.rounds_complete = 0
         self.missions_failed = 0
-        self.suspicion = []    #array of size number_of_players to show the chances of them being spy from 0 to 1
-        i = 0
-        #If not spy no need to track suspcion of AI agent
-        if not self.is_spy():
 
-            while i < number_of_players:
-                if i != self.player_number:
-                    self.suspicion.append(len(self.spy_list)/(self.number_of_players - 1))
-                else:
-                    self.suspicion.append(-1)
-                i += 1
-        else:
-            while i < number_of_players:
-                    self.suspicion.append(len(self.spy_list)/(self.number_of_players))
-                    i += 1
+        #self.suspicion is an array of size number_of_players to show the chances of them being spy, 
+        #everyone starts at 0, number goes up if theyre more suspicious and down if they are less.
+        self.suspicion = {}
+        for i in range(number_of_players):
+            self.suspicion[i] = 0
 
         if number_of_players == 5 or number_of_players == 6:
             self.number_of_spies = 2
@@ -59,42 +50,46 @@ class AI_Agent(Agent):
         betrayals_required are the number of betrayals required for the mission to fail.
         '''
         team = []
-        suspectIndex = [] #List of tuples containng index of agent and suspect lvl
-        index = 0
-        for agent in self.suspicion:
-            suspectIndex.append((agent,index))
-            index += 1
 
-        suspectIndex.sort() # Sort by suspicion in acending order
+        if self.is_spy():
+            key_list = list(self.suspicion.keys())
+            val_list = list(self.suspicion.values())
+            sorted_list = val_list.copy()
+            sorted_list.sort()
 
-        # If not spy always put least suspicious agents on mission
-        if not self.is_spy():
-            i = 0
-            while len(team)<team_size:
-                team.append(suspectIndex[i][1])
-                i += 1
-        # If spy put the least suspcious spy on mission 
-        # And most suspicous agents
+            for i in range(self.number_of_players):
+                smallest = sorted_list[i]
+                position = val_list.index(smallest)
+                if key_list[position] in self.spy_list:
+                    team.append(key_list[position])
+                    break
+
+            for i in range(self.number_of_players):
+                smallest = sorted_list[i]
+                position = val_list.index(smallest)
+                if key_list[position] not in team:
+                    team.append(key_list[position])
+                    break
+
+
+
+
+        #If the agent is no a spy, put the least suspicious players on the team
         else:
+           
+            key_list = list(self.suspicion.keys())
+            val_list = list(self.suspicion.values())
+            sorted_list = val_list.copy()
+            sorted_list.sort()
 
-            for a in suspectIndex:
-                #First spy is least suspicous
-                if a[1] in self.spy_list:
-                    team.append(a[1])
+            for i in range(team_size):
+                smallest = sorted_list[i]
+                position = val_list.index(smallest)
+                team.append(key_list[position])
 
-                    if self.number_of_players <= 6 or self.rounds_complete != 3: #Two may be spies required
-                        break
-                    elif len(team) == 2:
-                        break
 
-            suspectIndex.sort(reverse=True) # Sort by suspicion in decending order
-            
-            for a in suspectIndex:
-                if a[1] not in self.spy_list:
-                    team.append(a[1])
-                    if team == team_size:
-                        break
-        return team        
+
+        return team    
 
     def vote(self, mission, proposer):
         '''
@@ -104,58 +99,76 @@ class AI_Agent(Agent):
         The function should return True if the vote is for the mission, and False if the vote is against the mission.
         '''
         vote = False
-        suspectIndex = [] #List of tuples containng index of agent and suspect lvl
-        index = 0
-        for agent in self.suspicion:
-            suspectIndex.append((agent,index))
-            index += 1
 
-        suspectIndex.sort(reverse=True) # Sort by suspicion in decending order
-
-        #Obviously vote for missions agent proposed
+        #vote for our own proposals
         if proposer == self.player_number:
-            vote = True
-        #If spy Only vote for critcal missions ie win or lose situation if spy is on
-        elif self.is_spy() and self.critical_mission():
-            for spy in self.spy_list:
-                if spy in mission:
-                    vote = True
-        #If not spy vote for missions if most suspcious agents aren't on
-        elif not self.is_spy():
-            vote = True
-            suspects = [] # list of most suspcious agents length of number of spies
-            i = 0
+            return True
 
-            while len(suspects) != self.number_of_spies:
-                suspects.append(suspectIndex[i][1])
 
-            for a in mission:
-                 if a in suspects:
-                    vote = False
+        #a list of all players sorted with the most suspicous 1st
+        key_list = list(self.suspicion.keys())
+        val_list = list(self.suspicion.values())
+        sorted_list = val_list.copy()
+        sorted_list.sort(reverse=True)
+
+        #finds the most suspicous
+        position = val_list.index(sorted_list[0])
+        most_suspicious = key_list[position]
+
+        #Logic is we are the spy
+        if self.is_spy():
+
+            spy_on_mission = False
+            for i in mission:
+                if i in self.spy_list:
+                    spy_on_mission = True
+
+            #on critical missions, we need a spy on the team to win
+            if self.critical_mission():
+                return spy_on_mission
+
             
-        #If spy only vote for missions with minimum number of spies needed to fail mission
-        # and not most suspect spy
+
+            #if the most suspicous is a spy and on the mission, vote no
+            #if the most suspicous is a res, vote yes
+            if most_suspicious in mission:
+                if most_suspicious in self.spy_list:
+                    return False
+                else:
+                    return True
+
+            #Vote yes if there is a spy on the mission,
+            #Vote no if there is not
+            return spy_on_mission
+
+
+        #Logic is we are not the spy
         else:
-            suspectIndex.sort()# Sort in acedning order
-            vote = True
-            susSpy = -1 #Most suspcious spy
-            spyCount = 0
-            for suspect in suspectIndex:
-                if suspect[1] in self.spy_list:
-                    susSpy = suspect
-            for a in mission:
-                if a == susSpy:
-                    vote = False
-                    break
-                if a in self.spy_list:
-                    spyCount += 1
-            if self.number_of_players > 6 or self.rounds_complete == 3 and spyCount != 2:
-                vote = False
-            elif spyCount != 1:
-                vote = False
 
-        return(vote)
+            if most_suspicious == proposer:
+                return False
 
+            if most_suspicious in mission:
+                return False
+
+            #gets a rating for how dangerous the mission could be
+            mission_suspicion = 0
+            for i in mission:
+                mission_suspicion += self.suspicion[i]
+            avg_mission_suspicion = mission_suspicion / len(mission)
+
+            #gets a rating for how dangerous the group is
+            total_suspicion = 0
+            for i in self.suspicion:
+                total_suspicion += self.suspicion[i]
+            avg_suspicion = total_suspicion / len(self.suspicion)
+            
+            #if the mission is more dangerous than the group average, dont do the mission
+            vote = avg_mission_suspicion < avg_suspicion
+
+            #vote = self.suspicion[proposer] < avg_suspicion
+
+        return vote
     def vote_outcome(self, mission, proposer, votes):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -164,9 +177,8 @@ class AI_Agent(Agent):
         votes is a dictionary mapping player indexes to Booleans (True if they voted for the mission, False otherwise).
         No return value is required or expected.
         '''
-        #nothing to do here
-        pass
 
+        pass
     def betray(self, mission, proposer):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -175,45 +187,40 @@ class AI_Agent(Agent):
         The method should return True if this agent chooses to betray the mission, and False otherwise. 
         By default, spies will betray 30% of the time. 
         '''
-        averageSuspicion = 1 / self.number_of_players
-        suspectIndex = [] #List of tuples containng index of agent in mission and suspect lvl
-        index = 0
-        for a in self.suspicion:
-            if index in mission:
-                suspectIndex.append((a,index))
-            index += 1
-        suspectIndex.sort(reverse=True) # Sort by suspicion in decending order
-
-        spies = []#Spies in mission 
-        for agent in mission:
-                if agent in self.spy_list:
-                    spies.append(agent)
-
+        
         if self.critical_mission():
-            return(True)
+            return True
 
-        #Dont betray if only spy on mission where 2 betrayals needed
-        elif self.number_of_players > 6 or self.rounds_complete == 3:
-            if len(spies) == 1:
-                return(False)
+        if self.spy_list in mission:
+            return False
 
-        #Dont betray if all spies are on mission
-        elif len(spies) == self.number_of_spies:
-            return(False)
+        
+        #gets a rating for how dangerous the group is
+        total_suspicion = 0
+        for i in self.suspicion:
+            total_suspicion += self.suspicion[i]
+        avg_suspicion = total_suspicion / len(self.suspicion)
 
-        #Only betray if suspicion of all spies on mission is less than average or 
-        #There is a more suspicious non spy
-        else:
-            for ag in suspectIndex:
-                if ag[1] in mission and ag[1] in spies:
-                    break
-                elif ag[1] in mission:
-                    return(True)
-            betray = True
-            for ag in suspectIndex:
-                if ag[1] in spies and ag[0] > averageSuspicion:
-                    betray = False
-            return(betray)
+        #if i have below average suspicion
+        if self.suspicion[self.player_number] <= avg_suspicion:
+            return True
+
+        teammates = []
+        for i in mission:
+            if i != self.player_number:
+                teammates.append(i)
+
+        mission_suspicion = 0
+        for i in teammates:
+            mission_suspicion += self.suspicion[i]
+        avg_mission_suspicion = mission_suspicion / len(teammates)
+
+        #if i have below average team suspicion
+        if self.suspicion[self.player_number] <= avg_mission_suspicion:
+            return True
+
+        return False
+
 
     def mission_outcome(self, mission, proposer, betrayals, mission_success):
         '''
@@ -225,62 +232,24 @@ class AI_Agent(Agent):
         It iss not expected or required for this function to return anything.
         '''
 
-        if not mission_success:
-            agent = 0
-            suspect_agents = [] #List of tuples containing suspect agent and current suspicion lvls
-            non_suspect_agents = [] # Agents not on mission
-            total_sus = 0 
+        if mission_success:
+            for i in mission:
+                self.suspicion[i] -= 1
+            self.suspicion[proposer] -= 1
 
-            # if number of betrayals equals number of spies only agents that went on last mission can be spies
-            if betrayals == self.number_of_spies:
-                while agent < self.number_of_players:
-                    if agent in mission and self.suspicion[agent] != -1:
-                        suspect_agents.append((agent,self.suspicion[agent]))
-                        total_sus += self.suspicion[agent]
-                    else:
-                        self.suspicion[agent] = -1 #Agent is not suspicious
-                    agent += 1
-                for suspect in suspect_agents:
-                    if total_sus == 0:
-                        self.suspicion[suspect[0]] = 1
-                    else:
-                        self.suspicion[suspect[0]] = suspect[1]/total_sus
+
+        else:
+
+            if betrayals == len(mission):
+                for i in mission:
+                    self.suspicion[i] += 100
+
+            sus_modifier = betrayals/len(mission)
+            for i in mission:
+                self.suspicion[i] += 50*sus_modifier
+            self.suspicion[proposer] += 30*sus_modifier
                 
-
-            else:
-                betrayal_ratio = betrayals/ self.number_of_spies
-                
-                while agent < self.number_of_players:
-                    if agent in mission and self.suspicion[agent] != -1:
-                        suspect_agents.append((agent,self.suspicion[agent]))
-                        total_sus += self.suspicion[agent]
-                    elif self.suspicion[agent] != -1:
-                        non_suspect_agents.append((agent,self.suspicion[agent]))
-                    agent += 1
-
-                # Will crash if total_sus = 0 (Prob due to agent being in mission with non suspicious agents and being a spy???)
-                if total_sus == 0:
-                    return(0)
-
-                # total_sus == 1 also crashes I assume this means that the only suspicious agents went on the mission
-                if total_sus == 1:
-                    return(1)
-
-                # Adjust the suspicion of agents on mission based on betrayels and amount on agents on mission
-                suspicion_ratio = betrayal_ratio / total_sus
-                total_non_sus = 1 - total_sus
-                new_total_sus = 0
-
-                for suspect in suspect_agents:
-                    self.suspicion[suspect[0]] = suspect[1] * suspicion_ratio
-                    new_total_sus += self.suspicion[suspect[0]]
-
-                # Similarly adjust suspicion of agents not on mission
-                new_total_non_sus = 1 - new_total_sus
-                for non_suspect in non_suspect_agents:
-                    non_sus_ratio = non_suspect[1] / total_non_sus
-                    self.suspicion[non_suspect[0]] = non_sus_ratio * new_total_sus
-        pass
+            
 
     def round_outcome(self, rounds_complete, missions_failed):
         '''
