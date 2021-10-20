@@ -1,7 +1,7 @@
 from agent import Agent
 import random
 
-class AI_Agent1(Agent):        
+class AI_Agent(Agent):        
     '''A sample implementation of a random agent in the game The Resistance'''
 
     def __init__(self, name='Rando'):
@@ -316,9 +316,6 @@ class AI_Agent1(Agent):
             f = open("agent_results1.txt", "a")
             f.write(" RES-WIN")
             f.close()
-
-            
-        pass
 
     def critical_mission(self):
         '''
