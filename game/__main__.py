@@ -1,5 +1,7 @@
 from random_agent import RandomAgent
 from AI import AI_Agent
+from dylan_ai import AI_Agent2
+
 from game import Game
 
 
