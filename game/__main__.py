@@ -9,17 +9,21 @@ f.close()
 
 num = int(input("Game Size?:"))
 c = input("Should AI be spies or resistance S/R?:")
-if c != 'R' and c != 'r' and  c != 's' and  c != 's':
+if c != 'R' and c != 'r' and  c != 's' and  c != 'S':
         exit()
 if num == 5:
 
-        for k in range(1000):
+        for k in range(3000):
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),   
                 RandomAgent(name='R'),
-                RandomAgent(name='R'),
                 RandomAgent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(RandomAgent(name='R'))
+
 
                 game = Game(agents,c)
                 game.play()
@@ -27,14 +31,18 @@ if num == 5:
 
 if num == 6:
 
-        for k in range(1000):
+        for k in range(3000):
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
                 RandomAgent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(RandomAgent(name='R'))
+                        agents.append(RandomAgent(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -42,15 +50,18 @@ if num == 6:
 
 if num == 7:
 
-        for k in range(1000):
+        for k in range(3000):
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),  
                 RandomAgent(name='R'),
                 RandomAgent(name='R'),
-                RandomAgent(name='R'),
                 RandomAgent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(RandomAgent(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -58,16 +69,20 @@ if num == 7:
 
 if num == 8:
 
-        for k in range(1000):
+        for k in range(3000):
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),  
                 RandomAgent(name='R'),
                 RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
                 RandomAgent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(RandomAgent(name='R'))
+                        agents.append(RandomAgent(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -75,17 +90,22 @@ if num == 8:
 
 if num == 9:
 
-        for k in range(1000):
+        for k in range(3000):
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),  
                 RandomAgent(name='R'),
                 RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
                 RandomAgent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(RandomAgent(name='R'))
+                        agents.append(RandomAgent(name='R'))
+                        agents.append(RandomAgent(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -93,7 +113,7 @@ if num == 9:
 
 if num == 10:
 
-        for k in range(1000):
+        for k in range(3000):
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
@@ -102,9 +122,14 @@ if num == 10:
                 RandomAgent(name='R'),
                 RandomAgent(name='R'),
                 RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
                 RandomAgent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(RandomAgent(name='R'))
+                        agents.append(RandomAgent(name='R'))
+
 
                 game = Game(agents,c)
                 game.play()
