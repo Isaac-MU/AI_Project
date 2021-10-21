@@ -88,7 +88,7 @@ class AI_Agent2(Agent):
 
 
 
-        #If the agent is not     a spy, put the least suspicious players on the team
+        #If the agent is not a spy, put the least suspicious players on the team
         else:
            
             key_list = list(self.suspicion.keys())
