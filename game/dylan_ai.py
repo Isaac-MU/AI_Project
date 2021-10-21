@@ -169,7 +169,7 @@ class AI_Agent2(Agent):
                     return False
                 if i == proposer:
                     return False
-
+            return True
             #gets a rating for how dangerous the mission could be
         #    mission_suspicion = 0
         #    for i in mission:
@@ -191,7 +191,7 @@ class AI_Agent2(Agent):
            #     return False
     
         #All saftey checks done, and mission is deemed safe
-            return True
+        return True
     def vote_outcome(self, mission, proposer, votes):
         '''
         mission is a list of agents to be sent on a mission. 
