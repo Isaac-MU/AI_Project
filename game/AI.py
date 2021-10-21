@@ -299,7 +299,23 @@ class AI_Agent(Agent):
         spies, a list of the player indexes for the spies.
         '''
         #nothing to do here
-        pass
+        
+        if self.is_spy() and spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" SPY-WIN")
+            f.close()
+        elif self.is_spy() and not spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" SPY-LOSS")
+            f.close()
+        elif not self.is_spy() and spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" RES-LOSS")
+            f.close()
+        elif not self.is_spy() and not spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" RES-WIN")
+            f.close()
 
     def critical_mission(self):
         '''
