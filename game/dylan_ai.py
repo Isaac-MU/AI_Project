@@ -170,31 +170,28 @@ class AI_Agent2(Agent):
                 if i == proposer:
                     return False
 
-
-
-
             #gets a rating for how dangerous the mission could be
-            mission_suspicion = 0
-            for i in mission:
-                mission_suspicion += self.suspicion[i]
-            avg_mission_suspicion = mission_suspicion / len(mission)
+        #    mission_suspicion = 0
+        #    for i in mission:
+        #        mission_suspicion += self.suspicion[i]
+        #    avg_mission_suspicion = mission_suspicion / len(mission)####
 
             #gets a rating for how dangerous the group is
-            total_suspicion = 0
-            for i in self.suspicion:
-                total_suspicion += self.suspicion[i]
-            avg_suspicion = total_suspicion / len(self.suspicion)
+        #    total_suspicion = 0
+        #    for i in self.suspicion:
+        #        total_suspicion += self.suspicion[i]
+        #    avg_suspicion = total_suspicion / len(self.suspicion)
             
             #if the mission is more dangerous than the group average, dont do the mission
-            if(avg_mission_suspicion > avg_suspicion):
-                return False
+       #     if(avg_mission_suspicion > avg_suspicion):
+       #         return False
 
             #if the mission proposer is more dangerous than the group average, dont do the mission
-            if(self.suspicion[proposer] > avg_suspicion):
-                return False
-
+            #if(self.suspicion[proposer] > avg_suspicion):
+           #     return False
+    
         #All saftey checks done, and mission is deemed safe
-        return True
+            return True
     def vote_outcome(self, mission, proposer, votes):
         '''
         mission is a list of agents to be sent on a mission. 
