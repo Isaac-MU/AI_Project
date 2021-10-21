@@ -11,8 +11,8 @@ def AI_results():
             spy_win_count += 1
         if k == 'SPY-LOSS':
             spy_loss_count += 1
-    print('SPY WINS: ', spy_win_count*3)
-    print('SPY LOSSES: ', spy_loss_count*3)
+    print('SPY WINS: ', spy_win_count)
+    print('SPY LOSSES: ', spy_loss_count)
 
     res_win_count = 0
     res_loss_count = 0
@@ -24,8 +24,8 @@ def AI_results():
     print('RES WINS: ', res_win_count*3)
     print('RES LOSSES: ', res_loss_count*3)
 
-    print('WINS: ', (res_win_count + spy_win_count)*3)
-    print('LOSSES: ', (res_loss_count + spy_loss_count)*3)
+    print('WINS: ', (res_win_count + spy_win_count))
+    print('LOSSES: ', (res_loss_count + spy_loss_count))
     f.close()
 
 
