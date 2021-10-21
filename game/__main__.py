@@ -20,12 +20,12 @@ f.close()
 
 for i in range(1000):
                 
-        agents = [AI_Agent2(name='AI'), 
-                AI_Agent2(name='r2'),  
-                RandomAgent(name='r3'),  
-                RandomAgent(name='r5'),  
-                RandomAgent(name='r6'),  
-                RandomAgent(name='r7')]
+        agents = [AI_Agent(name='AI'), 
+                AI_Agent(name='r2'),  
+                AI_Agent2(name='r3'),  
+                AI_Agent(name='r5'),  
+                AI_Agent2(name='r6'),  
+                AI_Agent(name='r7')]
 
         game = Game(agents)
         game.play()

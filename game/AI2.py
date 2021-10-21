@@ -242,8 +242,8 @@ class AI_Agent2(Agent):
 
         #do not betray if all the spies are on the mission
         if self.spy_list in mission:
+            #return False
             return False
-
         
         #gets a rating for how dangerous the group is
         total_suspicion = 0
@@ -271,7 +271,8 @@ class AI_Agent2(Agent):
         if self.suspicion[self.player_number] <= avg_mission_suspicion:
             return True
 
-        return False
+        #80% chance to betray if its suspicious (need points to win c:)
+        return (random.randint(1,10) < 9)
 
 
     def mission_outcome(self, mission, proposer, betrayals, mission_success):
