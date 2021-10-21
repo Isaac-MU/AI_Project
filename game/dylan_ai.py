@@ -51,12 +51,25 @@ class AI_Agent2(Agent):
         '''
         team = []
 
+        #decisions if the agent is a spy
         if self.is_spy():
             key_list = list(self.suspicion.keys())
             val_list = list(self.suspicion.values())
             sorted_list = val_list.copy()
             sorted_list.sort()
 
+            #get as many spies as possible if the mission is critical
+            if self.critical_mission():
+                for i in range(self.number_of_players):
+                    smallest = sorted_list[i]
+                    position = val_list.index(smallest)
+                    if len(team) == team_size:
+                        if key_list[position] in self.spy_list:
+                            team.append(key_list[position])
+                    else:
+                        break
+
+            #put the least suspicious spy in the mission
             for i in range(self.number_of_players):
                 smallest = sorted_list[i]
                 position = val_list.index(smallest)
@@ -64,6 +77,7 @@ class AI_Agent2(Agent):
                     team.append(key_list[position])
                     break
 
+            #put the least suspicious res in the misison
             for i in range(self.number_of_players):
                 smallest = sorted_list[i]
                 position = val_list.index(smallest)
@@ -74,7 +88,7 @@ class AI_Agent2(Agent):
 
 
 
-        #If the agent is no a spy, put the least suspicious players on the team
+        #If the agent is not a spy, put the least suspicious players on the team
         else:
            
             key_list = list(self.suspicion.keys())
@@ -115,9 +129,16 @@ class AI_Agent2(Agent):
         position = val_list.index(sorted_list[0])
         most_suspicious = key_list[position]
 
+        #the most suspicious, same lengths as number of spies
+        potential_spies = []
+        for i in range(self.number_of_spies):
+            position = val_list.index(sorted_list[0])
+            potential_spies.append(key_list[position])
+
         #Logic is we are the spy
         if self.is_spy():
 
+            #is there a spy on this mission?
             spy_on_mission = False
             for i in mission:
                 if i in self.spy_list:
@@ -125,31 +146,32 @@ class AI_Agent2(Agent):
 
             #on critical missions, we need a spy on the team to win
             if self.critical_mission():
-                return spy_on_mission
-
-            
-
-            #if the most suspicous is a spy and on the mission, vote no
-            #if the most suspicous is a res, vote yes
-            if most_suspicious in mission:
-                if most_suspicious in self.spy_list:
-                    return False
-                else:
+                if(spy_on_mission):
                     return True
 
-            #Vote yes if there is a spy on the mission,
-            #Vote no if there is not
+            
+            #acting like a res, only voting for missions with the least suspicious
+            for i in mission:
+                if i in potential_spies:
+                    return False
+
+            #if nothings else happens, vote yes if there is a spy on the team
             return spy_on_mission
 
 
         #Logic is we are not the spy
         else:
 
-            if most_suspicious == proposer:
-                return False
+            #if a potential spy is on the mission or proposed the mission,
+            #vote is False
+            for i in potential_spies:
+                if i in mission:
+                    return False
+                if i == proposer:
+                    return False
 
-            if most_suspicious in mission:
-                return False
+
+
 
             #gets a rating for how dangerous the mission could be
             mission_suspicion = 0
@@ -164,11 +186,15 @@ class AI_Agent2(Agent):
             avg_suspicion = total_suspicion / len(self.suspicion)
             
             #if the mission is more dangerous than the group average, dont do the mission
-            vote = avg_mission_suspicion < avg_suspicion
+            if(avg_mission_suspicion > avg_suspicion):
+                return False
 
-            #vote = self.suspicion[proposer] < avg_suspicion
+            #if the mission proposer is more dangerous than the group average, dont do the mission
+            if(self.suspicion[proposer] > avg_suspicion):
+                return False
 
-        return vote
+        #All saftey checks done, and mission is deemed safe
+        return True
     def vote_outcome(self, mission, proposer, votes):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -178,7 +204,32 @@ class AI_Agent2(Agent):
         No return value is required or expected.
         '''
 
-        pass
+        mission_sus = False
+
+        key_list = list(self.suspicion.keys())
+        val_list = list(self.suspicion.values())
+        sorted_list = val_list.copy()
+        sorted_list.sort(reverse=True)
+
+        #the most suspicious players, same lengths as number of spies
+        potential_spies = []
+        for i in range(self.number_of_spies):
+            position = val_list.index(sorted_list[0])
+            potential_spies.append(key_list[position])
+
+        for i in mission:
+            if i in potential_spies:
+                mission_sus = True
+
+        #if the mission is suspicious, everyone related to the mission is a little more suspicious
+        if(mission_sus):
+            for i in mission:
+                self.suspicion[i] += 5
+            self.suspicion[proposer] += 5
+
+            for i in votes:
+                self.suspicion[i] += 5
+            
     def betray(self, mission, proposer):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -188,12 +239,14 @@ class AI_Agent2(Agent):
         By default, spies will betray 30% of the time. 
         '''
         
+        #betray is it is critical
         if self.critical_mission():
             return True
 
+        #do not betray if all the spies are on the mission
         if self.spy_list in mission:
+            #return False
             return False
-
         
         #gets a rating for how dangerous the group is
         total_suspicion = 0
@@ -213,13 +266,16 @@ class AI_Agent2(Agent):
         mission_suspicion = 0
         for i in teammates:
             mission_suspicion += self.suspicion[i]
-        avg_mission_suspicion = mission_suspicion / len(teammates)
-
+        if mission_suspicion != 0:
+            avg_mission_suspicion = mission_suspicion / len(teammates)
+        else:
+            avg_mission_suspicion = 0
         #if i have below average team suspicion
         if self.suspicion[self.player_number] <= avg_mission_suspicion:
             return True
 
-        return False
+        #80% chance to betray if its suspicious (need points to win c:)
+        return (random.randint(1,10) < 9)
 
 
     def mission_outcome(self, mission, proposer, betrayals, mission_success):
@@ -234,20 +290,21 @@ class AI_Agent2(Agent):
 
         if mission_success:
             for i in mission:
-                self.suspicion[i] -= 10
-            self.suspicion[proposer] -= 10
+                self.suspicion[i] -= 20
+            self.suspicion[proposer] -= 20
 
 
         else:
 
+            #if everyone on the mission betrays, then they are all spies
             if betrayals == len(mission):
                 for i in mission:
                     self.suspicion[i] += 100
 
-            sus_modifier = betrayals/len(mission)
+            sus_modifier = float(betrayals)/float(len(mission))
             for i in mission:
-                self.suspicion[i] += 50*sus_modifier
-            self.suspicion[proposer] += 30*sus_modifier
+                self.suspicion[i] += 100*sus_modifier
+            self.suspicion[proposer] += 40*sus_modifier
                 
             
 
