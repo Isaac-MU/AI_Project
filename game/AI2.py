@@ -263,8 +263,10 @@ class AI_Agent2(Agent):
         mission_suspicion = 0
         for i in teammates:
             mission_suspicion += self.suspicion[i]
-        avg_mission_suspicion = mission_suspicion / len(teammates)
-
+        if mission_suspicion != 0:
+            avg_mission_suspicion = mission_suspicion / len(teammates)
+        else:
+            avg_mission_suspicion = 0
         #if i have below average team suspicion
         if self.suspicion[self.player_number] <= avg_mission_suspicion:
             return True
