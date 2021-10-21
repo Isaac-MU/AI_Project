@@ -24,10 +24,10 @@ class Game:
             raise Exception('Agent array out of range')
         #clone and shuffle agent array
         self.agents = agents.copy()
-        random.shuffle(self.agents)
+        #random.shuffle(self.agents)
         self.num_players = len(agents)
         #allocate spies
-        self.spies = []
+        self.spies = [3,5]
         while len(self.spies) < Agent.spy_count[self.num_players]:
             spy = random.randrange(self.num_players)
             if spy not in self.spies:

@@ -1,6 +1,6 @@
 def AI_results():
 
-    f = open("game/agent_results.txt", "r")
+    f = open("agent_results.txt", "r")
     data = f.read()
     words = data.split()
     print("RNG") 
@@ -30,7 +30,7 @@ def AI_results():
 
 
 
-    f = open("game/agent_results1.txt", "r")
+    f = open("agent_results1.txt", "r")
     data = f.read()
     words = data.split()
     print("AI 1") 
@@ -59,7 +59,7 @@ def AI_results():
     f.close()
 
 
-    f = open("game/agent_results2.txt", "r")
+    f = open("agent_results2.txt", "r")
     data = f.read()
     words = data.split()
     print("AI 2") 
