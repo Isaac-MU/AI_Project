@@ -18,15 +18,15 @@ f = open("agent_results2.txt", "w")
 f.write("")
 f.close()
 
-for k in range(1000):
+for k in range(100):
         
-        agents = [AI_Agent(name='AI1'), 
+        agents = [RandomAgent(name='AI1'), 
                 AI_Agent2(name='AI2'),  
-                AI_Agent(name='r3'),  
-                AI_Agent(name='r4'),  
+                RandomAgent(name='r3'),  
+                RandomAgent(name='r4'),  
                 AI_Agent2(name='r5'),  
-                AI_Agent(name='r6')]
-
+                AI_Agent2(name='r6')]
+        print(agents)
         game = Game(agents)
         game.play()
 
