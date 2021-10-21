@@ -51,13 +51,14 @@ class AI_Agent2(Agent):
         '''
         team = []
 
+        #decisions if the agent is a spy
         if self.is_spy():
             key_list = list(self.suspicion.keys())
             val_list = list(self.suspicion.values())
             sorted_list = val_list.copy()
             sorted_list.sort()
 
-
+            #get as many spies as possible if the mission is critical
             if self.critical_mission():
                 for i in range(self.number_of_players):
                     smallest = sorted_list[i]
@@ -68,6 +69,7 @@ class AI_Agent2(Agent):
                     else:
                         break
 
+            #put the least suspicious spy in the mission
             for i in range(self.number_of_players):
                 smallest = sorted_list[i]
                 position = val_list.index(smallest)
@@ -75,6 +77,7 @@ class AI_Agent2(Agent):
                     team.append(key_list[position])
                     break
 
+            #put the least suspicious res in the misison
             for i in range(self.number_of_players):
                 smallest = sorted_list[i]
                 position = val_list.index(smallest)
@@ -85,7 +88,7 @@ class AI_Agent2(Agent):
 
 
 
-        #If the agent is no a spy, put the least suspicious players on the team
+        #If the agent is not     a spy, put the least suspicious players on the team
         else:
            
             key_list = list(self.suspicion.keys())
