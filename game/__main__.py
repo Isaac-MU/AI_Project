@@ -1,7 +1,7 @@
 from random_agent import RandomAgent
 from AI import AI_Agent
 from dylan_ai import AI_Agent2
-
+from bayes_rule import bayes_rule
 from game import Game
 
 
@@ -20,11 +20,11 @@ f.write("")
 f.close()
 
 for i in range(1000):
-        agents = [AI_Agent2(name='AI'), 
-                AI_Agent2(name='r2'),  
-                AI_Agent2(name='r3'),  
+        agents = [bayes_rule(name='AI'), 
+                bayes_rule(name='r2'),  
+                bayes_rule(name='r3'),  
                 AI_Agent(name='r4'),  
-                AI_Agent2(name='r5'),  
+                bayes_rule(name='r5'),  
                 AI_Agent(name='r7')]
 
         game = Game(agents)

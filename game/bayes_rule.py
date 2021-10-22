@@ -1,4 +1,3 @@
-from _typeshed import Self
 from agent import Agent
 import random
 
@@ -40,8 +39,8 @@ class bayes_rule(Agent):
 
         #generates all possible spy teams to later keep tabs on
         if self.number_of_spies == 2:
-            for i in number_of_players:
-                for k in number_of_players:
+            for i in range(number_of_players):
+                for k in range(number_of_players):
 
                     if i != k:
                         possible_team = [i,k]
@@ -51,9 +50,9 @@ class bayes_rule(Agent):
 
 
         if self.number_of_spies == 3:
-            for i in number_of_players:
-                for k in number_of_players:
-                    for n in number_of_players:
+            for i in range(number_of_players):
+                for k in range(number_of_players):
+                    for n in range(number_of_players):
 
                         if i != k and i != n and k != n:
                             possible_team = [i,k,n]
@@ -63,10 +62,10 @@ class bayes_rule(Agent):
 
 
         if self.number_of_spies == 4:
-            for i in number_of_players:
-                for k in number_of_players:
-                    for n in number_of_players:
-                        for x in number_of_players:
+            for i in range(number_of_players):
+                for k in range(number_of_players):
+                    for n in range(number_of_players):
+                        for x in range(number_of_players):
 
                             if i != k and i != n and i != x and k != n and k != x and n != x:
                                 possible_team = [i,k,n,x]
@@ -79,13 +78,13 @@ class bayes_rule(Agent):
         #Initially all probabilities are equal (1/number of possbile teams)
         self.spy_team_probability = {}
         for i in range(len(self.possible_spy_teams)):
-            self.spy_team_probability[self.possible_spy_teams[i]] = 1/len(self.possible_spy_teams)
+            self.spy_team_probability[str(self.possible_spy_teams[i])] = 1/len(self.possible_spy_teams)
 
         #A dictionary containing the probability of each player being a spy
         #Initially all probabilities are equal (1/number of possbile teams)
         self.spy_probability = {}
         for i in range(number_of_players):
-            self.spy_probability[i] = 1/len(number_of_players)
+            self.spy_probability[i] = 1/number_of_players
 
 
 
@@ -107,8 +106,8 @@ class bayes_rule(Agent):
             #generates all possible teams
 
             if team_size == 2:
-                for i in self.number_of_players:
-                    for k in self.number_of_players:
+                for i in range(self.number_of_players):
+                    for k in range(self.number_of_players):
 
                         if i != k:
                             possible_team = [i,k]
@@ -117,10 +116,10 @@ class bayes_rule(Agent):
                                 self.possible_teams.append(possible_team)
 
 
-            if self.number_of_spies == 3:
-                for i in self.number_of_players:
-                    for k in self.number_of_players:
-                        for n in self.number_of_players:
+            if team_size == 3:
+                for i in range(self.number_of_players):
+                    for k in range(self.number_of_players):
+                        for n in range(self.number_of_players):
 
                             if i != k and i != n and k != n:
                                 possible_team = [i,k,n]
@@ -129,11 +128,11 @@ class bayes_rule(Agent):
                                     self.possible_teams.append(possible_team)
 
 
-            if self.number_of_spies == 4:
-                for i in self.number_of_players:
-                    for k in self.number_of_players:
-                        for n in self.number_of_players:
-                            for x in self.number_of_players:
+            if team_size == 4:
+                for i in range(self.number_of_players):
+                    for k in range(self.number_of_players):
+                        for n in range(self.number_of_players):
+                            for x in range(self.number_of_players):
 
                                 if i != k and i != n and i != x and k != n and k != x and n != x:
                                     possible_team = [i,k,n,x]
@@ -146,7 +145,7 @@ class bayes_rule(Agent):
             #Initially all probabilities are equal (1/number of possbile teams)
             self.team_probability = {}
             for i in range(len(self.possible_teams)):
-                self.team_probability[self.possible_teams[i]] = 1/len(self.possible_teams)
+                self.team_probability[str(self.possible_teams[i])] = 1/len(self.possible_teams)
 
             #Finds all the teams that i am on
             for i in self.possible_teams:
@@ -154,9 +153,9 @@ class bayes_rule(Agent):
                     self.teams_with_me.append(i)
 
             self.initialised = True
-
             #since we dont have any info on which team could be dangerous, just choose a random one with me on it
-            return random.choice(self.teams_with_me)
+            random_choice = random.randint(0, len(self.teams_with_me)-1)
+            return self.teams_with_me[random_choice]
 
 
         #Gets what i think the spy team is
@@ -209,7 +208,7 @@ class bayes_rule(Agent):
                 return False
 
         #If the proposer is suspected to be a spy, dont trust their vote
-        if proposer in most_dangerous_team:
+        if proposer in self.str_tolist(most_dangerous_team):
             return False
         
         #All saftey checks passed, vote yes
@@ -293,7 +292,22 @@ class bayes_rule(Agent):
         spies_win, True iff the spies caused 3+ missions to fail
         spies, a list of the player indexes for the spies.
         '''
-        pass
+        if self.is_spy() and spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" SPY-WIN")
+            f.close()
+        elif self.is_spy() and not spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" SPY-LOSS")
+            f.close()
+        elif not self.is_spy() and spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" RES-LOSS")
+            f.close()
+        elif not self.is_spy() and not spies_win:
+            f = open("agent_results2.txt", "a")
+            f.write(" RES-WIN")
+            f.close()
 
     def critical_mission(self):
         '''
@@ -314,10 +328,20 @@ class bayes_rule(Agent):
         for spy_team in self.possible_spy_teams:
             if player in spy_team:
                 #bayes rule
-                self.spy_team_probability[spy_team] *= amount
+                self.spy_team_probability[str(spy_team)] *= amount
 
     def max_suspicion(self, player):
         for spy_team in self.possible_spy_teams:
             if player in spy_team:
                 #bayes rule
-                self.spy_team_probability[spy_team] = 1
+                self.spy_team_probability[str(spy_team)] = 1
+
+    def str_tolist(self, string):
+        out = []
+        for char in string:
+
+            if char in ['0','1','2','3','4','5','6','7','8','9']:
+
+                out.append(char)
+        
+        return out
