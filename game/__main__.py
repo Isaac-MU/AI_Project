@@ -1,5 +1,7 @@
-from random_agent import RandomAgent
+
 from AI import AI_Agent
+from baye import bayes_rule
+
 from game import Game
 
 
@@ -7,24 +9,23 @@ f = open("results.txt", "w")
 f.write("")
 f.close()
 
-f = open("agent_results.txt", "w")
-f.write("")
-f.close()
-
-
 num = int(input("Game Size?:"))
 c = input("Should AI be spies or resistance S/R?:")
-if c != 'R' and c != 'r' and  c != 's' and  c != 's':
+if c != 'R' and c != 'r' and  c != 's' and  c != 'S':
         exit()
 if num == 5:
 
         for k in range(1000):
         
-                agents = [AI_Agent(name='AI'), 
-                AI_Agent(name='AI'),   
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                agents = [bayes_rule(name='AI'), 
+                bayes_rule(name='AI'),   
+                AI_Agent(name='R'),
+                AI_Agent(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(bayes_rule(name='AI'))
+                else:
+                        agents.append(AI_Agent(name='R'))
+
 
                 game = Game(agents,c)
                 game.play()
@@ -36,10 +37,14 @@ if num == 6:
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                bayes_rule(name='R'),
+                bayes_rule(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(bayes_rule(name='R'))
+                        agents.append(bayes_rule(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -52,10 +57,13 @@ if num == 7:
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),  
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                bayes_rule(name='R'),
+                bayes_rule(name='R'),
+                bayes_rule(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(bayes_rule(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -68,11 +76,15 @@ if num == 8:
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),  
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                bayes_rule(name='R'),
+                bayes_rule(name='R'),
+                bayes_rule(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(bayes_rule(name='R'))
+                        agents.append(bayes_rule(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -85,12 +97,17 @@ if num == 9:
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),  
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                bayes_rule(name='R'),
+                bayes_rule(name='R'),
+                bayes_rule(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(bayes_rule(name='R'))
+                        agents.append(bayes_rule(name='R'))
+                        agents.append(bayes_rule(name='R'))
 
                 game = Game(agents,c)
                 game.play()
@@ -104,12 +121,17 @@ if num == 10:
                 AI_Agent(name='AI'),  
                 AI_Agent(name='AI'),
                 AI_Agent(name='AI'),  
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                bayes_rule(name='R'),
+                bayes_rule(name='R'),
+                bayes_rule(name='R'),
+                bayes_rule(name='R')]
+                if c == 'r' or c == 'R':
+                        agents.append(AI_Agent(name='AI'))
+                        agents.append(AI_Agent(name='AI'))
+                else:
+                        agents.append(bayes_rule(name='R'))
+                        agents.append(bayes_rule(name='R'))
+
 
                 game = Game(agents,c)
                 game.play()
