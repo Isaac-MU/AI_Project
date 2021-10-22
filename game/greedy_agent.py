@@ -2,7 +2,7 @@ from agent import Agent
 import random
 
 class greedy_agent(Agent):        
-    '''A sample implementation of a random agent in the game The Resistance'''
+    '''Simple greedy agent, makes locally optimal choices at each step, very simple.'''
 
     def __init__(self, name='Greedy'):
         '''
