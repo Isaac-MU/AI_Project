@@ -171,7 +171,7 @@ class bayes_rule(Agent):
             team_clean = True
             for team in self.teams_with_me:
                 for team_member in team:
-                    if team_member in most_dangerous_team:
+                    if str(team_member) in str(most_dangerous_team):
                         team_clean = False
                 if team_clean:
                     return team

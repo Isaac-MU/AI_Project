@@ -1,7 +1,7 @@
 from random_agent import RandomAgent
 from AI import AI_Agent
 from game import Game
-
+from bayes_rule import bayes_rule
 
 f = open("results.txt", "w")
 f.write("")
@@ -22,9 +22,9 @@ if num == 5:
         
                 agents = [AI_Agent(name='AI'), 
                 AI_Agent(name='AI'),   
-                RandomAgent(name='R'),
-                RandomAgent(name='R'),
-                RandomAgent(name='R')]
+                bayes_rule(name='R'),
+                bayes_rule(name='R'),
+                bayes_rule(name='R')]
 
                 game = Game(agents,c)
                 game.play()
