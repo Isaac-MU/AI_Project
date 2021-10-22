@@ -47,12 +47,7 @@ class Game:
             while len(self.spies) != spyCount:
                 if self.agents[spy].name == 'R':
                     self.spies.append(spy)
-                spy += 1
-        #while len(self.spies) < Agent.spy_count[self.num_players]:
-        #    spy = random.randrange(self.num_players)
-        #    if spy not in self.spies:
-         #       self.spies.append(spy)
-        #start game for each agent        
+                spy += 1     
         for agent_id in range(self.num_players):
             spy_list = self.spies.copy() if agent_id in self.spies else []
             self.agents[agent_id].new_game(self.num_players,agent_id, spy_list)
