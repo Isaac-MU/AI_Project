@@ -86,8 +86,6 @@ class bayes_rule(Agent):
         for i in range(number_of_players):
             self.spy_probability[i] = 1/number_of_players
 
-
-
     def is_spy(self):
         '''
         returns True iff the agent is a spy
@@ -176,8 +174,7 @@ class bayes_rule(Agent):
 
         #If i cant find a team where the suspects aren't on, ill just chose a random team.
         return random.choice(self.teams_with_me)
-
-            
+       
     def vote(self, mission, proposer):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -214,7 +211,6 @@ class bayes_rule(Agent):
         #All saftey checks passed, vote yes
         return True
 
-
     def vote_outcome(self, mission, proposer, votes):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -229,13 +225,13 @@ class bayes_rule(Agent):
             for player in votes:
                 #Voted with me, probably good ppl
                 #reduce the sus level of all their spy groups
-                self.change_suspicion(player , 0.5)
+                self.change_suspicion(player , 0.2, False)
 
         else:
             for player in votes:
                 #Voted with me, probably bad ppl
                 #increase the sus level of all their spy groups
-                self.change_suspicion(player , 1.5)
+                self.change_suspicion(player , 0.7, True)
 
     def betray(self, mission, proposer):
         '''
@@ -263,18 +259,17 @@ class bayes_rule(Agent):
 
         if not mission_success:
             #increase sus level(proposer)
-            self.change_suspicion(proposer , 1.5)
+            self.change_suspicion(proposer , 0.7, True)
 
             for player in mission:
                 #increase sus level
-                self.change_suspicion(player , 1.5)
+                self.change_suspicion(player , 0.7, True)
 
         else:
             #decrease sus level(proposer)
             for player in mission:
                 #decrease sus levl
-                self.change_suspicion(player , 0.5)
-
+                self.change_suspicion(player , 0.3, False)
 
     def round_outcome(self, rounds_complete, missions_failed):
         '''
@@ -293,19 +288,19 @@ class bayes_rule(Agent):
         spies, a list of the player indexes for the spies.
         '''
         if self.is_spy() and spies_win:
-            f = open("agent_results2.txt", "a")
+            f = open("agent_results.txt", "a")
             f.write(" SPY-WIN")
             f.close()
         elif self.is_spy() and not spies_win:
-            f = open("agent_results2.txt", "a")
+            f = open("agent_results.txt", "a")
             f.write(" SPY-LOSS")
             f.close()
         elif not self.is_spy() and spies_win:
-            f = open("agent_results2.txt", "a")
+            f = open("agent_results.txt", "a")
             f.write(" RES-LOSS")
             f.close()
         elif not self.is_spy() and not spies_win:
-            f = open("agent_results2.txt", "a")
+            f = open("agent_results.txt", "a")
             f.write(" RES-WIN")
             f.close()
 
@@ -324,11 +319,38 @@ class bayes_rule(Agent):
         else:
             return(False)
 
-    def change_suspicion(self, player, amount):
+    def change_suspicion(self, player, amount, evil):
+        '''This is where bayes rule is applied to change
+         the suspicion level of the players and spy teams'''
+
+
+
+         # P(A|B) = P(A) x (P(B|A)/P(B))
+         # P(A) = prior probability: self.spy_team_probability[str(spy_team)]
+         # P(B) = probability under any circumstance: 
+         # P(B|A) = probability of the evidence, given the belief is true: P(A/B) = P(A∩B) / P(B): 
+         # P(A∩B) = (P(A) * P(B))
+         # P(A|B) = posterior probabaility after evidence is considered: bayesian_product
+         #
+        if(evil):
+            mod = 1
+        else:
+            mod = 0
+
         for spy_team in self.possible_spy_teams:
             if player in spy_team:
                 #bayes rule
-                self.spy_team_probability[str(spy_team)] *= amount
+                #print("IN: ", self.spy_team_probability[str(spy_team)] )
+                P_a = self.spy_team_probability[str(spy_team)]
+                P_b = amount
+                P_AnB = P_a * P_b
+                P_bIa = P_AnB / P_b
+                bayesian_product = (P_a * mod+((P_bIa/P_b)))
+                self.spy_team_probability[str(spy_team)] = bayesian_product
+                #print("OUT: ", self.spy_team_probability[str(spy_team)] )
+
+
+                
 
     def max_suspicion(self, player):
         for spy_team in self.possible_spy_teams:
