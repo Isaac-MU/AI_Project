@@ -156,24 +156,34 @@ class bayes_rule(Agent):
             return self.teams_with_me[random_choice]
 
 
-        #Gets what i think the spy team is
-        key_list = list(self.spy_team_probability.keys())
-        val_list = list(self.spy_team_probability.values())
-        position = val_list.index(max(val_list))
-        most_dangerous_team = key_list[position]
+        #Is initialized
 
 
-        #Will chose a team i am on, and the suspected spies are not on
-        team_clean = True
-        for team in self.teams_with_me:
-            for team_member in team:
-                if team_member in most_dangerous_team:
-                    team_clean = False
-            if team_clean:
-                return team
+        if not self.is_spy():
+            #Gets what i think the spy team is
+            key_list = list(self.spy_team_probability.keys())
+            val_list = list(self.spy_team_probability.values())
+            position = val_list.index(max(val_list))
+            most_dangerous_team = key_list[position]
 
-        #If i cant find a team where the suspects aren't on, ill just chose a random team.
-        return random.choice(self.teams_with_me)
+
+            #Will chose a team i am on, and the suspected spies are not on
+            team_clean = True
+            for team in self.teams_with_me:
+                for team_member in team:
+                    if team_member in most_dangerous_team:
+                        team_clean = False
+                if team_clean:
+                    return team
+
+            #If i cant find a team where the suspects aren't on, ill just chose a random team.
+            return random.choice(self.teams_with_me)
+
+        else:
+            #Just choses a team im on
+            return random.choice(self.teams_with_me)
+
+
        
     def vote(self, mission, proposer):
         '''
@@ -192,25 +202,34 @@ class bayes_rule(Agent):
         #Then there has to be a spy on the mission, so we vote no
         if (len(mission) >= self.number_of_players - self.number_of_spies) and (self.player_number not in mission):
             return False
-            
-        #Gets what i think the spy team is
-        key_list = list(self.spy_team_probability.keys())
-        val_list = list(self.spy_team_probability.values())
-        position = val_list.index(max(val_list))
-        most_dangerous_team = key_list[position]
+        
+        if not self.is_spy():
+            #Gets what i think the spy team is
+            key_list = list(self.spy_team_probability.keys())
+            val_list = list(self.spy_team_probability.values())
+            position = val_list.index(max(val_list))
+            most_dangerous_team = key_list[position]
 
-        #If a suspected spy is on the team, vote no
-        for player in most_dangerous_team:
-            if player in mission:
+            #If a suspected spy is on the team, vote no
+            for player in most_dangerous_team:
+                if player in mission:
+                    return False
+
+            #If the proposer is suspected to be a spy, dont trust their vote
+            if proposer in self.str_tolist(most_dangerous_team):
                 return False
 
-        #If the proposer is suspected to be a spy, dont trust their vote
-        if proposer in self.str_tolist(most_dangerous_team):
+            
+            #All saftey checks passed, vote yes
+            return True
+
+        else:
+            for player in mission:
+                if player in self.spy_list:
+                    return True
+
             return False
         
-        #All saftey checks passed, vote yes
-        return True
-
     def vote_outcome(self, mission, proposer, votes):
         '''
         mission is a list of agents to be sent on a mission. 
@@ -349,8 +368,6 @@ class bayes_rule(Agent):
                 self.spy_team_probability[str(spy_team)] = bayesian_product
                 #print("OUT: ", self.spy_team_probability[str(spy_team)] )
 
-
-                
 
     def max_suspicion(self, player):
         for spy_team in self.possible_spy_teams:

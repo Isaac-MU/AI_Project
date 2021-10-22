@@ -20,12 +20,12 @@ f.write("")
 f.close()
 
 for i in range(1000):
-        agents = [bayes_rule(name='AI'), 
-                bayes_rule(name='r2'),  
-                bayes_rule(name='r3'),  
-                AI_Agent(name='r4'),  
-                bayes_rule(name='r5'),  
-                AI_Agent(name='r7')]
+        agents = [AI_Agent(name='AI'), 
+                AI_Agent(name='r2'),  
+                AI_Agent(name='r3'),  
+                bayes_rule(name='r4'),  
+                AI_Agent(name='r5'),  
+                bayes_rule(name='r7')]
 
         game = Game(agents)
         game.play()
