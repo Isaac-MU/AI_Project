@@ -1,3 +1,4 @@
+from _typeshed import Self
 from agent import Agent
 import random
 
@@ -34,11 +35,10 @@ class bayes_rule(Agent):
         self.initialised = False
         self.teams_with_me = []
         self.possible_teams = []
+        self.possible_spy_teams = []
 
 
         #generates all possible spy teams to later keep tabs on
-        possible_spy_teams = []
-
         if self.number_of_spies == 2:
             for i in number_of_players:
                 for k in number_of_players:
@@ -46,8 +46,8 @@ class bayes_rule(Agent):
                     if i != k:
                         possible_team = [i,k]
                         possible_team.sort()
-                        if possible_team not in possible_spy_teams:
-                            possible_spy_teams.append(possible_team)
+                        if possible_team not in self.possible_spy_teams:
+                            self.possible_spy_teams.append(possible_team)
 
 
         if self.number_of_spies == 3:
@@ -58,8 +58,8 @@ class bayes_rule(Agent):
                         if i != k and i != n and k != n:
                             possible_team = [i,k,n]
                             possible_team.sort()
-                            if possible_team not in possible_spy_teams:
-                                possible_spy_teams.append(possible_team)
+                            if possible_team not in self.possible_spy_teams:
+                                self.possible_spy_teams.append(possible_team)
 
 
         if self.number_of_spies == 4:
@@ -71,15 +71,15 @@ class bayes_rule(Agent):
                             if i != k and i != n and i != x and k != n and k != x and n != x:
                                 possible_team = [i,k,n,x]
                                 possible_team.sort()
-                                if possible_team not in possible_spy_teams:
-                                    possible_spy_teams.append(possible_team)
+                                if possible_team not in self.possible_spy_teams:
+                                    self.possible_spy_teams.append(possible_team)
 
 
         #A dictionary containing the probability of each spy team existing
         #Initially all probabilities are equal (1/number of possbile teams)
         self.spy_team_probability = {}
-        for i in range(len(possible_spy_teams)):
-            self.spy_team_probability[possible_spy_teams[i]] = 1/len(possible_spy_teams)
+        for i in range(len(self.possible_spy_teams)):
+            self.spy_team_probability[self.possible_spy_teams[i]] = 1/len(self.possible_spy_teams)
 
         #A dictionary containing the probability of each player being a spy
         #Initially all probabilities are equal (1/number of possbile teams)
@@ -224,7 +224,19 @@ class bayes_rule(Agent):
         votes is a dictionary mapping player indexes to Booleans (True if they voted for the mission, False otherwise).
         No return value is required or expected.
         '''
-        pass
+        
+        #On my proposals
+        if (proposer == self.player_number) or (self.player_number in votes):
+            for player in votes:
+                #Voted with me, probably good ppl
+                #reduce the sus level of all their spy groups
+                self.change_suspicion(player , 0.5)
+
+        else:
+            for player in votes:
+                #Voted with me, probably bad ppl
+                #increase the sus level of all their spy groups
+                self.change_suspicion(player , 1.5)
 
     def betray(self, mission, proposer):
         '''
@@ -245,8 +257,26 @@ class bayes_rule(Agent):
         and mission_success is True if there were not enough betrayals to cause the mission to fail, False otherwise.
         It iss not expected or required for this function to return anything.
         '''
-        pass
-            
+        if betrayals == len(mission):
+            for player in mission:
+                self.max_suspicion(player)
+                
+
+        if not mission_success:
+            #increase sus level(proposer)
+            self.change_suspicion(proposer , 1.5)
+
+            for player in mission:
+                #increase sus level
+                self.change_suspicion(player , 1.5)
+
+        else:
+            #decrease sus level(proposer)
+            for player in mission:
+                #decrease sus levl
+                self.change_suspicion(player , 0.5)
+
+
     def round_outcome(self, rounds_complete, missions_failed):
         '''
         basic informative function, where the parameters indicate:
@@ -280,3 +310,14 @@ class bayes_rule(Agent):
         else:
             return(False)
 
+    def change_suspicion(self, player, amount):
+        for spy_team in self.possible_spy_teams:
+            if player in spy_team:
+                #bayes rule
+                self.spy_team_probability[spy_team] *= amount
+
+    def max_suspicion(self, player):
+        for spy_team in self.possible_spy_teams:
+            if player in spy_team:
+                #bayes rule
+                self.spy_team_probability[spy_team] = 1
