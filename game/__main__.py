@@ -87,9 +87,19 @@ if num == 9:
                 RandomAgent(name='R'),
                 RandomAgent(name='R')]
 
+<<<<<<< Updated upstream
                 game = Game(agents,c)
                 game.play()
                 print(game)
+=======
+for i in range(10):
+        agents = [AI_Agent2(name='AI'), 
+                AI_Agent2(name='r2'),  
+                AI_Agent2(name='r3'),  
+                bayes_rule(name='r4'),  
+                AI_Agent2(name='r5'),  
+                bayes_rule(name='r7')]
+>>>>>>> Stashed changes
 
 if num == 10:
 
