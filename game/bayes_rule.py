@@ -2,9 +2,9 @@ from agent import Agent
 import random
 
 class bayes_rule(Agent):        
-    '''A sample implementation of a decision tree agent in the game The Resistance'''
+    '''A sample implementation of a bayes rule agent in the game The Resistance'''
 
-    def __init__(self, name='Rando'):
+    def __init__(self, name='baye'):
         '''
         Initialises the agent.
         Nothing to do here.
@@ -182,8 +182,6 @@ class bayes_rule(Agent):
         else:
             #Just choses a team im on
             return random.choice(self.teams_with_me)
-
-
        
     def vote(self, mission, proposer):
         '''
@@ -343,14 +341,15 @@ class bayes_rule(Agent):
          the suspicion level of the players and spy teams'''
 
 
-
+         #bayes rule
          # P(A|B) = P(A) x (P(B|A)/P(B))
          # P(A) = prior probability: self.spy_team_probability[str(spy_team)]
          # P(B) = probability under any circumstance: 
          # P(B|A) = probability of the evidence, given the belief is true: P(A/B) = P(A∩B) / P(B): 
          # P(A∩B) = (P(A) * P(B))
          # P(A|B) = posterior probabaility after evidence is considered: bayesian_product
-         #
+         
+
         if(evil):
             mod = 1
         else:
@@ -359,21 +358,18 @@ class bayes_rule(Agent):
         for spy_team in self.possible_spy_teams:
             if player in spy_team:
                 #bayes rule
-                #print("IN: ", self.spy_team_probability[str(spy_team)] )
                 P_a = self.spy_team_probability[str(spy_team)]
                 P_b = amount
                 P_AnB = P_a * P_b
                 P_bIa = P_AnB / P_b
                 bayesian_product = (P_a * mod+((P_bIa/P_b)))
                 self.spy_team_probability[str(spy_team)] = bayesian_product
-                #print("OUT: ", self.spy_team_probability[str(spy_team)] )
-
 
     def max_suspicion(self, player):
         for spy_team in self.possible_spy_teams:
             if player in spy_team:
                 #bayes rule
-                self.spy_team_probability[str(spy_team)] = 1
+                self.spy_team_probability[str(spy_team)] = 10000000000000000000
 
     def str_tolist(self, string):
         out = []
@@ -384,3 +380,4 @@ class bayes_rule(Agent):
                 out.append(char)
         
         return out
+
